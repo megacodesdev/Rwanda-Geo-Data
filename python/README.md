@@ -8,13 +8,13 @@ Zero dependencies. Lookups are case-insensitive. District names are unique, so y
 ## JavaScript / TypeScript
 
 ```bash
-npm install rwanda-geo-data
+npm install @linkfy-connect/rwanda-geo-data
 ```
 
 Works in Node, and in any bundler-based framework (React, Next.js, Vue, Nuxt, Angular, Svelte/SvelteKit, Astro, Remix, React Native, Vite, webpack) via ESM, CommonJS and bundled TypeScript types.
 
 ```js
-import { getProvinces, getDistricts, getSectors, getCells, getVillages, search } from 'rwanda-geo-data';
+import { getProvinces, getDistricts, getSectors, getCells, getVillages, search } from '@linkfy-connect/rwanda-geo-data';
 
 getProvinces();                                  // ['East', 'Kigali', 'North', 'South', 'West']
 getDistricts('East');                            // ['Bugesera', 'Gatsibo', ...]
@@ -27,7 +27,7 @@ getVillages('Bugesera', 'Gashora', 'Biryogo');   // ['Bidudu', 'Biryogo', ...]
 
 ```jsx
 import { useState } from 'react';
-import { getProvinces, getDistricts, getSectors, getCells, getVillages } from 'rwanda-geo-data';
+import { getProvinces, getDistricts, getSectors, getCells, getVillages } from '@linkfy-connect/rwanda-geo-data';
 
 const LEVELS = ['province', 'district', 'sector', 'cell', 'village'];
 
@@ -63,7 +63,7 @@ export default function AddressPicker() {
 ```vue
 <script setup>
 import { ref, computed } from 'vue';
-import { getProvinces, getDistricts } from 'rwanda-geo-data';
+import { getProvinces, getDistricts } from '@linkfy-connect/rwanda-geo-data';
 const province = ref('');
 const districts = computed(() => getDistricts(province.value));
 </script>
@@ -75,12 +75,12 @@ const districts = computed(() => getDistricts(province.value));
 
 ### Angular, Svelte, Next.js, Nuxt
 
-Same import everywhere: `import { getDistricts } from 'rwanda-geo-data'`. In Next.js/Nuxt it also works in server code (API routes, server components).
+Same import everywhere: `import { getDistricts } from '@linkfy-connect/rwanda-geo-data'`. In Next.js/Nuxt it also works in server code (API routes, server components).
 
 The whole dataset is about 190 kB in the bundle (roughly 40 kB gzipped). To keep it out of the initial bundle, load it lazily:
 
 ```js
-const geo = await import('rwanda-geo-data');
+const geo = await import('@linkfy-connect/rwanda-geo-data');
 ```
 
 ### API
@@ -165,12 +165,6 @@ twine upload dist/*
 
 Bump the version in both `package.json` and `python/pyproject.toml` for each release.
 
-## Author
-
-Developed by **LinkFy Connect** ([github.com/megacodesdev](https://github.com/megacodesdev)).
-
-Issues and contributions: https://github.com/megacodesdev/Rwanda-Geo-Data/issues
-
 ## License
 
-MIT © LinkFy Connect
+MIT

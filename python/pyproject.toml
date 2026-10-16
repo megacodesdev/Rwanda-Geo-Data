@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rwanda-geo-data"
+version = "1.0.0"
+description = "Rwanda administrative divisions: provinces, districts, sectors, cells and villages."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "LinkFy Connect" }]
+authors = [{ name = "megacodesdev" }]
+keywords = ["rwanda", "geo", "provinces", "districts", "sectors", "cells", "villages"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+rwanda_geo_data = ["data.json", "py.typed"]
+
+[project.urls]
+Homepage = "https://github.com/megacodesdev/Rwanda-Geo-Data"
+Repository = "https://github.com/megacodesdev/Rwanda-Geo-Data"
+Issues = "https://github.com/megacodesdev/Rwanda-Geo-Data/issues"
+
+[project.urls]
+Homepage = "https://github.com/megacodesdev/Rwanda-Geo-Data"
+Repository = "https://github.com/megacodesdev/Rwanda-Geo-Data"
+Issues = "https://github.com/megacodesdev/Rwanda-Geo-Data/issues"

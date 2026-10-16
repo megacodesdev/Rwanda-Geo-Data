@@ -1,0 +1,58 @@
+{
+  "name": "rwanda-geo-data",
+  "version": "1.0.0",
+  "description": "Rwanda administrative divisions (provinces, districts, sectors, cells, villages) with lookup and search helpers.",
+  "keywords": [
+    "rwanda",
+    "geo",
+    "provinces",
+    "districts",
+    "sectors",
+    "cells",
+    "villages",
+    "administrative-divisions",
+    "address"
+  ],
+  "author": "LinkFy Connect (https://github.com/megacodesdev)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/megacodesdev/Rwanda-Geo-Data.git"
+  },
+  "homepage": "https://github.com/megacodesdev/Rwanda-Geo-Data#readme",
+  "bugs": {
+    "url": "https://github.com/megacodesdev/Rwanda-Geo-Data/issues"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./data": "./data/rwanda-geo-data.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "npm run build && node --test test/index.test.js",
+    "prepublishOnly": "npm test"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

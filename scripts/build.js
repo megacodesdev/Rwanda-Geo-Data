@@ -5,8 +5,9 @@ const root = path.join(__dirname, '..');
 
 const json = JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'data/rwanda-geo-data.json'), 'utf8')));
 const core = fs.readFileSync(path.join(root, 'src/core.js'), 'utf8');
-const names = ['data', 'getProvinces', 'getDistricts', 'getProvinceOf', 'getSectors',
-  'getCells', 'getVillages', 'isValidAddress', 'search', 'getStats'];
+const names = ['data', 'getCountry', 'getProvinces', 'getDistricts', 'getDistrictsByProvince', 'getProvinceOf',
+  'getSectors', 'getSectorsByDistrict', 'getCells', 'getCellsBySector', 'getVillages', 'getVillagesByCell',
+  'isValidAddress', 'search', 'getRandomLocation', 'countLocations', 'getStats'];
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 

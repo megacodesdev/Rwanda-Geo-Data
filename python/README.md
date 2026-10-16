@@ -3,31 +3,77 @@
 Rwanda's administrative divisions for JavaScript/TypeScript and Python:
 **5 provinces → 30 districts → 416 sectors → 2,149 cells → 14,837 villages**.
 
-Zero dependencies. Lookups are case-insensitive. District names are unique, so you only pass the district (no province) when looking up sectors, cells and villages.
+Zero dependencies. Lookups are case-insensitive and diacritic-insensitive. District names are unique, so the province argument is optional below district level.
 
-## JavaScript / TypeScript
+## Install
 
 ```bash
-npm install @linkfy-connect/rwanda-geo-data
+npm install @linkfy-connect/rwanda-geo-data      # JavaScript / TypeScript
+pip install rwanda-geo-data                      # Python
 ```
 
-Works in Node, and in any bundler-based framework (React, Next.js, Vue, Nuxt, Angular, Svelte/SvelteKit, Astro, Remix, React Native, Vite, webpack) via ESM, CommonJS and bundled TypeScript types.
+Works in Node and in every bundler-based framework (React, Next.js, Vue, Nuxt, Angular, Svelte, Astro, React Native, Vite, webpack), with ESM, CommonJS and TypeScript types included.
+
+## Functions
+
+| JavaScript | Python | Returns |
+|---|---|---|
+| `getCountry()` | `get_country()` | `"Rwanda"` |
+| `getProvinces()` | `get_provinces()` | all provinces |
+| `getDistricts()` | `get_districts()` | all districts |
+| `getDistrictsByProvince(province)` | `get_districts_by_province(province)` | districts of a province |
+| `getSectors()` | `get_sectors()` | all sectors (unique names) |
+| `getSectorsByDistrict(province, district)` | `get_sectors_by_district(province, district)` | sectors of a district |
+| `getCells()` | `get_cells()` | all cells (unique names) |
+| `getCellsBySector(province, district, sector)` | `get_cells_by_sector(province, district, sector)` | cells of a sector |
+| `getVillages()` | `get_villages()` | all villages (unique names) |
+| `getVillagesByCell(province, district, sector, cell)` | `get_villages_by_cell(province, district, sector, cell)` | villages of a cell |
+| `search(query, { levels, limit })` | `search(query, levels=None, limit=50)` | matches at any level |
+| `getRandomLocation()` | `get_random_location()` | a random full address |
+| `countLocations()` | `count_locations()` | number of divisions per level |
+| `getProvinceOf(district)` | `get_province_of(district)` | province name |
+| `isValidAddress({...})` | `is_valid_address(...)` | `true` / `false` |
+
+Shorter calls also work: leave out the province, for example `getSectorsByDistrict('Bugesera')` or `getCellsBySector('Bugesera', 'Gashora')`. A wrong province for a district returns an empty list.
+
+## JavaScript
 
 ```js
-import { getProvinces, getDistricts, getSectors, getCells, getVillages, search } from '@linkfy-connect/rwanda-geo-data';
+import {
+  getCountry, getProvinces, getDistrictsByProvince, getSectorsByDistrict,
+  getCellsBySector, getVillagesByCell, search, getRandomLocation, countLocations,
+} from '@linkfy-connect/rwanda-geo-data';
 
-getProvinces();                                  // ['East', 'Kigali', 'North', 'South', 'West']
-getDistricts('East');                            // ['Bugesera', 'Gatsibo', ...]
-getSectors('Bugesera');                          // ['Gashora', 'Juru', ...]
-getCells('Bugesera', 'Gashora');                 // ['Biryogo', 'Kabuye', ...]
-getVillages('Bugesera', 'Gashora', 'Biryogo');   // ['Bidudu', 'Biryogo', ...]
+getCountry();                                                   // 'Rwanda'
+getProvinces();                                                 // ['East', 'Kigali', 'North', 'South', 'West']
+getDistrictsByProvince('East');                                 // ['Bugesera', 'Gatsibo', ...]
+getSectorsByDistrict('East', 'Bugesera');                       // ['Gashora', 'Juru', ...]
+getCellsBySector('East', 'Bugesera', 'Gashora');                // ['Biryogo', 'Kabuye', ...]
+getVillagesByCell('East', 'Bugesera', 'Gashora', 'Biryogo');    // ['Bidudu', 'Biryogo', ...]
+
+countLocations();   // { provinces: 5, districts: 30, sectors: 416, cells: 2149, villages: 14837 }
+getRandomLocation();
+// { province: 'East', district: 'Bugesera', sector: 'Gashora', cell: 'Biryogo', village: 'Bidudu' }
+```
+
+### Search
+
+Multi-word, case-insensitive and diacritic-insensitive. Every word must appear in the item's name or in the names above it, so `"gashora bugesera"` finds the Gashora sector and everything inside it. Exact name matches come first, then closer matches, then shallower levels.
+
+```js
+search('gashora');
+search('gashora bugesera', { limit: 10 });
+search('kigali', { levels: ['district', 'sector'] });
+// [{ level: 'sector', name: 'Gashora', province: 'East', district: 'Bugesera', sector: 'Gashora' }, ...]
 ```
 
 ### React: cascading dropdowns
 
 ```jsx
 import { useState } from 'react';
-import { getProvinces, getDistricts, getSectors, getCells, getVillages } from '@linkfy-connect/rwanda-geo-data';
+import {
+  getProvinces, getDistrictsByProvince, getSectorsByDistrict, getCellsBySector, getVillagesByCell,
+} from '@linkfy-connect/rwanda-geo-data';
 
 const LEVELS = ['province', 'district', 'sector', 'cell', 'village'];
 
@@ -42,10 +88,10 @@ export default function AddressPicker() {
 
   const options = {
     province: getProvinces(),
-    district: a.province ? getDistricts(a.province) : [],
-    sector: a.district ? getSectors(a.district) : [],
-    cell: a.sector ? getCells(a.district, a.sector) : [],
-    village: a.cell ? getVillages(a.district, a.sector, a.cell) : [],
+    district: a.province ? getDistrictsByProvince(a.province) : [],
+    sector: a.district ? getSectorsByDistrict(a.province, a.district) : [],
+    cell: a.sector ? getCellsBySector(a.province, a.district, a.sector) : [],
+    village: a.cell ? getVillagesByCell(a.province, a.district, a.sector, a.cell) : [],
   };
 
   return LEVELS.map((level) => (
@@ -63,9 +109,9 @@ export default function AddressPicker() {
 ```vue
 <script setup>
 import { ref, computed } from 'vue';
-import { getProvinces, getDistricts } from '@linkfy-connect/rwanda-geo-data';
+import { getProvinces, getDistrictsByProvince } from '@linkfy-connect/rwanda-geo-data';
 const province = ref('');
-const districts = computed(() => getDistricts(province.value));
+const districts = computed(() => getDistrictsByProvince(province.value));
 </script>
 <template>
   <select v-model="province"><option v-for="p in getProvinces()" :key="p">{{ p }}</option></select>
@@ -73,50 +119,25 @@ const districts = computed(() => getDistricts(province.value));
 </template>
 ```
 
-### Angular, Svelte, Next.js, Nuxt
+Angular, Svelte, Next.js, Nuxt and React Native use the same import. In Next.js and Nuxt it also works in server code.
 
-Same import everywhere: `import { getDistricts } from '@linkfy-connect/rwanda-geo-data'`. In Next.js/Nuxt it also works in server code (API routes, server components).
-
-The whole dataset is about 190 kB in the bundle (roughly 40 kB gzipped). To keep it out of the initial bundle, load it lazily:
-
-```js
-const geo = await import('@linkfy-connect/rwanda-geo-data');
-```
-
-### API
-
-| Function | Returns |
-|---|---|
-| `getProvinces()` | `string[]` |
-| `getDistricts(province?)` | districts of a province, or all 30 |
-| `getProvinceOf(district)` | province name or `undefined` |
-| `getSectors(district)` | `string[]` |
-| `getCells(district, sector)` | `string[]` |
-| `getVillages(district, sector, cell)` | `string[]` |
-| `isValidAddress({province, district, sector?, cell?, village?})` | `boolean` |
-| `search(query, {levels?, limit?})` | `[{level, name, province, district?, ...}]` |
-| `getStats()` | counts per level |
-| `data` | the raw nested object |
+The dataset is about 190 kB in the bundle (roughly 40 kB gzipped). To keep it out of the first load, import it lazily: `const geo = await import('@linkfy-connect/rwanda-geo-data')`.
 
 ## Python
-
-```bash
-pip install rwanda-geo-data
-```
-
-Python 3.8+, standard library only.
 
 ```python
 import rwanda_geo_data as geo
 
-geo.get_provinces()                                  # ['East', 'Kigali', 'North', 'South', 'West']
-geo.get_districts("East")                            # ['Bugesera', 'Gatsibo', ...]
-geo.get_sectors("Bugesera")                          # ['Gashora', 'Juru', ...]
-geo.get_cells("Bugesera", "Gashora")                 # ['Biryogo', 'Kabuye', ...]
-geo.get_villages("Bugesera", "Gashora", "Biryogo")   # ['Bidudu', 'Biryogo', ...]
-geo.is_valid_address("East", "Bugesera", "Gashora")  # True
-geo.search("gashora", levels=["sector"])
-geo.DATA                                             # raw nested dict
+geo.get_country()                                              # 'Rwanda'
+geo.get_districts_by_province("East")                          # ['Bugesera', 'Gatsibo', ...]
+geo.get_sectors_by_district("East", "Bugesera")                # ['Gashora', 'Juru', ...]
+geo.get_cells_by_sector("East", "Bugesera", "Gashora")         # ['Biryogo', 'Kabuye', ...]
+geo.get_villages_by_cell("East", "Bugesera", "Gashora", "Biryogo")
+
+geo.search("gashora bugesera", limit=10)
+geo.get_random_location()
+geo.count_locations()
+geo.DATA                                                       # raw nested dict
 ```
 
 ### FastAPI
@@ -129,16 +150,14 @@ app = FastAPI()
 
 @app.get("/districts/{province}")
 def districts(province: str):
-    return geo.get_districts(province)
+    return geo.get_districts_by_province(province)
 
-@app.get("/sectors/{district}")
-def sectors(district: str):
-    return geo.get_sectors(district)
+@app.get("/search")
+def search(q: str):
+    return geo.search(q, limit=20)
 ```
 
-### Django / Flask
-
-Call the same functions inside any view, serializer or form validator, for example `geo.is_valid_address(...)` in a form's `clean()`.
+Django and Flask work the same way: call these functions in any view, serializer or form validator.
 
 ## Development
 
@@ -149,22 +168,12 @@ cd python && python -m unittest discover -s tests
 
 `data/rwanda-geo-data.json` is the single source of truth. Edit it, then run `npm run build`: this regenerates `dist/` and copies the data into the Python package.
 
-## Publishing
+## Author
 
-```bash
-# npm
-npm login
-npm publish            # use `npm publish --access public` for a scoped name
+Developed by **LinkFy Connect** ([github.com/megacodesdev](https://github.com/megacodesdev)).
 
-# PyPI
-cd python
-pip install build twine
-python -m build
-twine upload dist/*
-```
-
-Bump the version in both `package.json` and `python/pyproject.toml` for each release.
+Issues and contributions: https://github.com/megacodesdev/Rwanda-Geo-Data/issues
 
 ## License
 
-MIT
+MIT © LinkFy Connect

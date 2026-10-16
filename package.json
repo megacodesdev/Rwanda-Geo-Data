@@ -1,5 +1,5 @@
 {
-  "name": "rwanda-geo-data",
+"name": "@linkfy-connect/rwanda-geo-data",
   "version": "1.0.0",
   "description": "Rwanda administrative divisions (provinces, districts, sectors, cells, villages) with lookup and search helpers.",
   "keywords": [
